@@ -180,7 +180,7 @@ Config: `.prettierrc.json`, `.prettierignore`, `eslint.config.mjs` (includes `es
 
 ### Branching (required)
 
-- **Do not push to `main`.** Work on a feature branch and open a PR.
+- **Do not push to `main`.** Work on a feature branch, push that branch, then **open the PR yourself on GitHub** (agents must not create PRs).
 - Local guard: Husky `.husky/pre-push` rejects pushes to `main` / `master`.
 - Remote guard (needs `gh` + admin), run once:
 
