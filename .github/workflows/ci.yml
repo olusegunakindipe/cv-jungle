@@ -1,0 +1,55 @@
+name: CI
+
+# Feature branches only — open a PR into main. Direct work on main is blocked.
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Lint · Format · Typecheck · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          NEXT_PUBLIC_SEO_INDEX: "false"
+          NEXT_PUBLIC_ENABLE_DEMO: "false"
+          LLM_PROVIDER: groq
+          GROQ_API_KEY: ci-placeholder

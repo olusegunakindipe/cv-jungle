@@ -1,0 +1,143 @@
+name: Release and Deploy
+
+# After a PR merges into main:
+#   1) quality checks
+#   2) release-please (opens/updates release PR, or cuts a GitHub Release)
+#   3) production deploy — only when release-please created a release
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: release-deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  quality:
+    name: Lint · Format · Typecheck · Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://example.com
+          NEXT_PUBLIC_SEO_INDEX: "false"
+          NEXT_PUBLIC_ENABLE_DEMO: "false"
+          LLM_PROVIDER: groq
+          GROQ_API_KEY: ci-placeholder
+
+  release-please:
+    name: Release Please
+    needs: quality
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
+    steps:
+      - name: Create release PR or GitHub Release
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          # Prefer RELEASE_PLEASE_TOKEN (PAT) when branch protection is on.
+          # Falls back to GITHUB_TOKEN when the secret is unset.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+      - name: Summarize
+        run: |
+          echo "release_created=${{ steps.release.outputs.release_created }}"
+          echo "tag_name=${{ steps.release.outputs.tag_name }}"
+          if [ "${{ steps.release.outputs.release_created }}" != "true" ]; then
+            echo "No version release this run — Release Please may have opened/updated a release PR."
+            echo "Merge that release PR to cut the tag; deploy runs only when release_created=true."
+          fi
+
+  deploy:
+    name: Deploy production
+    needs: [quality, release-please]
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Checkout release SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release-please.outputs.sha || github.sha }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_SEO_INDEX: ${{ vars.NEXT_PUBLIC_SEO_INDEX || 'true' }}
+          NEXT_PUBLIC_ENABLE_DEMO: "false"
+          NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ secrets.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }}
+          LLM_PROVIDER: ${{ vars.LLM_PROVIDER || 'groq' }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+
+      - name: Deploy to Vercel (production)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_ORG_ID" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "::warning::Release ${{ needs.release-please.outputs.tag_name }} is ready, but Vercel secrets are missing."
+            echo "Add repository secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID"
+            echo "Disable Vercel Git auto-deploy on main so this workflow owns production."
+            exit 0
+          fi
+          pnpm dlx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          pnpm dlx vercel build --prod --token="$VERCEL_TOKEN"
+          pnpm dlx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"

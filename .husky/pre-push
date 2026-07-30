@@ -1,0 +1,30 @@
+#!/usr/bin/env sh
+# Block direct pushes to main — work on a feature branch and open a PR.
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+
+if [ "$branch" = "main" ] || [ "$branch" = "master" ]; then
+  echo ""
+  echo "✗ Direct pushes to '$branch' are not allowed."
+  echo ""
+  echo "  1. Create a feature branch:  git switch -c feat/your-change"
+  echo "  2. Commit with conventional messages:  feat: … / fix: …"
+  echo "  3. Push the feature branch:  git push -u origin HEAD"
+  echo "  4. Open a PR into main (CI + conventional commits must pass)"
+  echo ""
+  exit 1
+fi
+
+# Also block if anyone force-pushes / pushes refs that update main from another checkout
+# when the push remote ref is main (e.g. git push origin HEAD:main)
+while read -r local_ref local_sha remote_ref remote_sha
+do
+  case "$remote_ref" in
+    refs/heads/main|refs/heads/master)
+      echo ""
+      echo "✗ Pushing to '$remote_ref' is not allowed."
+      echo "  Push a feature branch and merge via pull request."
+      echo ""
+      exit 1
+      ;;
+  esac
+done
