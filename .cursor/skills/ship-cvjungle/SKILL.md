@@ -16,6 +16,7 @@ disable-model-invocation: false
 - Always: feature branch → PR → merge → release-please → (optional) deploy.
 - Commits and PR titles must be Conventional Commits.
 - Do not commit secrets (`.env.local`, API keys, Vercel tokens).
+- Prettier runs on staged files in `pre-commit` (lint-staged) so CI `format:check` should pass.
 
 ## Workflows (what runs where)
 

@@ -236,7 +236,11 @@ Version bumps (release-please):
 - `fix:` → patch
 - `feat!:` / `BREAKING CHANGE:` → major (or minor while pre-1.0 depending on config)
 
-Locally, Husky runs commitlint on `commit-msg` and blocks direct pushes to `main`.
+Locally, Husky:
+
+- `pre-commit` → Prettier on staged files (`lint-staged`)
+- `commit-msg` → commitlint (conventional commits)
+- `pre-push` → blocks pushes to `main`
 
 ### Release Please files
 
