@@ -58,7 +58,7 @@ jobs:
 
       - name: Setup pnpm
         if: ${{ !startsWith(github.head_ref, 'release-please') }}
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
