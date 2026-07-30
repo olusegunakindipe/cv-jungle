@@ -18,6 +18,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { rewriteCVSentencesAction } from "@/app/actions";
+import { publicActionError, USER_ERRORS } from "@/lib/action-errors";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import toast from "react-hot-toast";
 
@@ -47,7 +48,7 @@ export function AIRewrites() {
 
     if (!parsedText || !roleDetails) {
       if (currentStep !== 1) {
-        toast.error("Please upload your CV and select a role first.", {
+        toast.error(USER_ERRORS.missingData, {
           id: "missing-data",
         });
         setCurrentStep(1);
@@ -73,20 +74,14 @@ export function AIRewrites() {
           keywordAnalysis?.missingKeywords
         )
       );
-      setResult(data as RewriteResult);
-      setAiRewrites(data);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to generate rewrites.";
-      if (errorMessage.includes("usage limit") || errorMessage.includes("RATE_LIMIT")) {
-        setError(errorMessage);
-      } else if (errorMessage.includes("REQUIRE_KEY")) {
-        setError(
-          "LLM API key missing. Add GROQ_API_KEY (free) or OPENAI_API_KEY in .env.local — see .env.example."
-        );
-      } else {
-        setError(errorMessage);
+      if (!data.ok) {
+        setError(data.error);
+        return;
       }
+      setResult(data.data);
+      setAiRewrites(data.data);
+    } catch (err: unknown) {
+      setError(publicActionError(err));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -102,13 +97,13 @@ export function AIRewrites() {
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="text-center mb-8 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-primary/20 dark:border-primary/25">
+      <div className="text-center mb-10 space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/25">
           <Zap className="w-3 h-3" />
           Step 04: Content Expansion
         </div>
         <h2 className="text-4xl font-black tracking-tight text-foreground uppercase italic">
-          High-Impact
+          High-Impact{" "}
           <span className="text-primary dark:text-primary not-italic">Rewrites</span>
         </h2>
         <p className="text-muted-foreground max-w-lg mx-auto font-medium">
@@ -129,11 +124,11 @@ export function AIRewrites() {
           </div>
           <div className="space-y-4 max-w-md mx-auto">
             <h3 className="text-2xl font-black text-foreground uppercase tracking-tight italic">
-              Optimizing Syntax...
+              Rewriting your bullets…
             </h3>
             <p className="text-muted-foreground font-medium italic">
-              Scanning for passive verbs and infusing industry-leading achievement metrics
-              into your performance records.
+              Please hold while we turn your experience into clearer, higher-impact lines
+              for ATS and recruiters.
             </p>
             <Progress value={85} className="h-2 rounded-full bg-muted" />
             <div className="flex gap-2 justify-center pt-2">

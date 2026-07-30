@@ -22,6 +22,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { generateLinkedInAction } from "@/app/actions";
+import { publicActionError } from "@/lib/action-errors";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import { buildOptimizedCV } from "@/lib/optimize-cv";
 import toast from "react-hot-toast";
@@ -75,7 +76,8 @@ export function LinkedInSuggestions() {
   const fetchLinkedInSuggestions = async (force = false) => {
     if (!force && (result || inFlightRef.current || linkedInSuggestions)) return;
     if (!structuredCV || !roleDetails) {
-      if (force) toast.error("CV is still being processed. Try again in a moment.");
+      if (force)
+        toast.error("Your CV is still processing. Please try again in a moment.");
       return;
     }
 
@@ -99,13 +101,7 @@ export function LinkedInSuggestions() {
       setResult(data as LinkedInResult);
       setLinkedInSuggestions(data as LinkedInResult);
     } catch (err: unknown) {
-      const msg =
-        err instanceof Error ? err.message : "Failed to generate LinkedIn content.";
-      setError(
-        msg.includes("REQUIRE_KEY") || msg.includes("quota")
-          ? "LLM API key missing. Add GROQ_API_KEY (free) or another provider key — see .env.example."
-          : msg
-      );
+      setError(publicActionError(err));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -142,8 +138,8 @@ export function LinkedInSuggestions() {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
       {/* Header */}
-      <div className="text-center mb-8 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-primary/20 dark:border-primary/25">
+      <div className="text-center mb-10 space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/25">
           <Zap className="w-3 h-3" />
           Step 05: LinkedIn Improvement
         </div>

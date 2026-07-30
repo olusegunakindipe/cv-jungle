@@ -211,8 +211,8 @@ export function FinalReview() {
 
   return (
     <div className="w-full max-w-5xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="text-center mb-4 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-primary/20 dark:border-primary/25">
+      <div className="text-center mb-10 space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/25">
           <Zap className="w-3 h-3" />
           Step 06: Updated CV
         </div>

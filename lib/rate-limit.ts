@@ -27,9 +27,10 @@ function readLimit(envName: string, fallback: number): number {
 }
 
 export const rateLimitConfig = {
-  parsePerHour: () => readLimit("RATE_LIMIT_PARSE_PER_HOUR", 40),
-  llmPerHour: () => readLimit("RATE_LIMIT_LLM_PER_HOUR", 15),
-  llmPerDay: () => readLimit("RATE_LIMIT_LLM_PER_DAY", 40),
+  parsePerHour: () => readLimit("RATE_LIMIT_PARSE_PER_HOUR", 20),
+  // Secondary caps — primary gate is one free flow/day (lib/trial.ts)
+  llmPerHour: () => readLimit("RATE_LIMIT_LLM_PER_HOUR", 6),
+  llmPerDay: () => readLimit("RATE_LIMIT_LLM_PER_DAY", 6),
 };
 
 export function assertRateLimit(options: {
@@ -53,9 +54,8 @@ export function assertRateLimit(options: {
       1,
       Math.ceil((oldest + options.windowMs - now) / 1000)
     );
-    const mins = Math.max(1, Math.ceil(retryAfterSec / 60));
     throw new RateLimitError(
-      `You've hit the free usage limit. Please wait about ${mins} minute${mins === 1 ? "" : "s"} and try again.`,
+      "We're a bit busy right now. Please wait a moment and try again.",
       retryAfterSec
     );
   }

@@ -3,6 +3,7 @@ import pdfParse from "pdf-parse";
 import mammoth from "mammoth";
 import { getClientIpFromRequest } from "@/lib/client-ip";
 import { assertParseRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { USER_ERRORS } from "@/lib/action-errors";
 
 export async function POST(req: Request) {
   try {
@@ -11,7 +12,10 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = formData.get("file") as File;
     if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Please choose a CV file to upload." },
+        { status: 400 }
+      );
     }
 
     // Soft size guard (10MB) — matches upload UI copy
@@ -48,7 +52,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Could not extract enough text from this file. Try a text-based PDF or DOCX (not a scanned image).",
+            "Could not read enough text from this file. Try a text-based PDF or DOCX (not a scanned image).",
         },
         { status: 400 }
       );
@@ -58,7 +62,7 @@ export async function POST(req: Request) {
   } catch (error) {
     if (isRateLimitError(error)) {
       return NextResponse.json(
-        { error: error.message, code: "RATE_LIMIT" },
+        { error: USER_ERRORS.busy, code: "RATE_LIMIT" },
         {
           status: 429,
           headers: { "Retry-After": String(error.retryAfterSec) },
@@ -68,7 +72,8 @@ export async function POST(req: Request) {
     console.error("Error parsing CV:", error);
     return NextResponse.json(
       {
-        error: "Failed to parse CV. Ensure the file is not password protected.",
+        error:
+          "We couldn't read that CV. Please try a different PDF or DOCX (not password protected).",
       },
       { status: 500 }
     );

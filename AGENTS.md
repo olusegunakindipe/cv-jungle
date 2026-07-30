@@ -180,7 +180,7 @@ Config: `.prettierrc.json`, `.prettierignore`, `eslint.config.mjs` (includes `es
 
 ### Branching (required)
 
-- **Do not push to `main`.** Work on a feature branch and open a PR.
+- **Do not push to `main`.** Work on a feature branch, push that branch, then **open the PR yourself on GitHub** (agents must not create PRs).
 - Local guard: Husky `.husky/pre-push` rejects pushes to `main` / `master`.
 - Remote guard (needs `gh` + admin), run once:
 
@@ -254,7 +254,17 @@ Locally, Husky:
 **Vars:** `NEXT_PUBLIC_SITE_URL`, optional `LLM_PROVIDER`, `NEXT_PUBLIC_SEO_INDEX`  
 **Environment:** `production` (deploy job)
 
-If branch protection blocks release PRs with `GITHUB_TOKEN`, set `RELEASE_PLEASE_TOKEN` (PAT with contents + pull requests).
+### Release Please: "not permitted to create pull requests"
+
+GitHub blocks `GITHUB_TOKEN` from opening PRs until you enable:
+
+1. Open [Actions workflow permissions](https://github.com/olusegunakindipe/cv-jungle/settings/actions)
+2. Under **Workflow permissions**:
+   - Select **Read and write permissions**
+   - Check **Allow GitHub Actions to create and approve pull requests**
+3. Save, then re-run the failed **Release and Deploy** workflow (or push an empty commit to `main`)
+
+Alternative: create a classic PAT with `repo` scope, add it as secret `RELEASE_PLEASE_TOKEN` (workflow already uses it when set).
 
 ---
 

@@ -18,6 +18,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { runOptimizationAnalysisAction } from "@/app/actions";
+import { publicActionError, USER_ERRORS } from "@/lib/action-errors";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import toast from "react-hot-toast";
 
@@ -47,7 +48,7 @@ export function KeywordAnalysis() {
     if (!isHydrated) return;
     if (!parsedText || !roleDetails) {
       if (currentStep !== 1) {
-        toast.error("Please upload your CV and select a role first.", {
+        toast.error(USER_ERRORS.missingData, {
           id: "missing-data",
         });
         setCurrentStep(1);
@@ -76,26 +77,16 @@ export function KeywordAnalysis() {
         })
       );
 
-      setStructuredCV(data.structuredCV);
-      setResult(data.analysis);
-      setKeywordAnalysis(data.analysis);
-    } catch (err: unknown) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Failed to analyze keywords.";
-      if (errorMessage.includes("usage limit") || errorMessage.includes("RATE_LIMIT")) {
-        setError(errorMessage);
-      } else if (
-        errorMessage.includes("REQUIRE_KEY") ||
-        errorMessage.includes("401") ||
-        errorMessage.includes("API key") ||
-        errorMessage.includes("quota")
-      ) {
-        setError(
-          "AI service unavailable. Check GROQ_API_KEY in .env.local — see .env.example."
-        );
-      } else {
-        setError(errorMessage);
+      if (!data.ok) {
+        setError(data.error);
+        return;
       }
+
+      setStructuredCV(data.data.structuredCV);
+      setResult(data.data.analysis);
+      setKeywordAnalysis(data.data.analysis);
+    } catch (err: unknown) {
+      setError(publicActionError(err));
     } finally {
       inFlightRef.current = false;
       setLoading(false);
@@ -130,8 +121,8 @@ export function KeywordAnalysis() {
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
-      <div className="text-center mb-8 space-y-4">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-primary/20 dark:border-primary/25">
+      <div className="text-center mb-10 space-y-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/25">
           <Zap className="w-3 h-3" />
           Step 03: ATS Optimization Plan
         </div>

@@ -1,10 +1,11 @@
 ---
 name: ship-cvjungle
 description: >-
-  Ships CVJungle changes via feature branches, conventional commits, PRs with
-  full descriptions, CI checks, release-please, and post-release deploy. Use when
-  the user asks to commit, push, open a PR, release, deploy, protect main, or
-  follow the repo GitHub Actions / branching workflow.
+  Ships CVJungle changes via feature branches, conventional commits, push to
+  feature branch only, CI checks, release-please, and post-release deploy. Never
+  create GitHub PRs — the user opens PRs manually. Use when the user asks to
+  commit, push, release, deploy, protect main, or follow the repo GitHub Actions
+  / branching workflow.
 disable-model-invocation: false
 ---
 
@@ -13,19 +14,20 @@ disable-model-invocation: false
 ## Hard rules
 
 - Never push directly to `main` / `master` (Husky `pre-push` blocks it).
-- Always: feature branch → PR → merge → release-please → (optional) deploy.
-- Commits and PR titles must be Conventional Commits.
+- Always: feature branch → **user opens PR manually** → merge → release-please → (optional) deploy.
+- **Never create or open a pull request** (`gh pr create`, GitHub API, compare URL automation, etc.). Stop after pushing the feature branch and tell the user the branch is ready.
+- Commits must be Conventional Commits (PR title should match when the user opens the PR).
 - Do not commit secrets (`.env.local`, API keys, Vercel tokens).
 - Prettier runs on staged files in `pre-commit` (lint-staged) so CI `format:check` should pass.
 
 ## Workflows (what runs where)
 
-| Workflow                   | Trigger       | Does                                                            |
-| -------------------------- | ------------- | --------------------------------------------------------------- |
-| `ci.yml`                   | PR → `main`   | lint, format, typecheck, build                                  |
-| `conventional-commits.yml` | PR            | semantic PR title + commitlint on all commits                   |
-| `release-and-deploy.yml`   | push → `main` | quality → release-please → deploy **only if** `release_created` |
-| `dependabot.yml`           | weekly        | bump Actions + npm                                              |
+| Workflow                   | Trigger                              | Does                                                            |
+| -------------------------- | ------------------------------------ | --------------------------------------------------------------- |
+| `ci.yml`                   | PR → `main`                          | lint, format, typecheck, build                                  |
+| `conventional-commits.yml` | PR → `main` (skip `release-please*`) | semantic PR title + commitlint                                  |
+| `release-and-deploy.yml`   | push → `main`                        | quality → release-please → deploy **only if** `release_created` |
+| `dependabot.yml`           | weekly                               | bump Actions + npm                                              |
 
 Pipeline after merge to `main`:
 
@@ -43,11 +45,8 @@ Copy and track:
 - [ ] Changes complete; no secrets staged
 - [ ] pnpm lint && pnpm format:check && pnpm typecheck (fix if failing)
 - [ ] Conventional commit(s) with body (see template)
-- [ ] Push feature branch (never main)
-- [ ] Open PR with title matching commits + full description (see template)
-- [ ] Wait for CI + conventional-commits green
-- [ ] Merge PR
-- [ ] After merge: Release Please PR appears → merge when ready to release/deploy
+- [ ] Push feature branch only (never main, never open a PR)
+- [ ] Tell the user the branch name + that they can open the PR manually
 ```
 
 ## Branch naming
@@ -80,7 +79,9 @@ EOF
 
 Version bumps (release-please): `feat` → minor (pre-1.0), `fix` → patch, `BREAKING CHANGE` / `feat!` → major.
 
-## PR title + description (required)
+## PR description (for the user — agents do not create PRs)
+
+When **you** open the PR on GitHub, use:
 
 **PR title** = same style as the primary commit (checked by Actions).
 
@@ -92,19 +93,9 @@ Version bumps (release-please): `feat` → minor (pre-1.0), `fix` → patch, `BR
 - <1–3 bullets summarizing the changes>
 ```
 
-Create PR:
+Do **not** add Workflows / release impact, Test plan, or commit lists.
 
-```bash
-git push -u origin HEAD
-gh pr create --base main --title "<conventional title>" --body "$(cat <<'EOF'
-## Summary
-- …
-
-EOF
-)"
-```
-
-## One-shot local commands
+## One-shot local commands (agent stops after push)
 
 ```bash
 git fetch origin
@@ -117,7 +108,7 @@ git add -A
 git status   # verify no .env.local
 git commit -m "feat: …"
 git push -u origin HEAD
-gh pr create --base main --fill   # or use body heredoc above
+# STOP — user opens the PR manually on GitHub
 ```
 
 ## Protect main (once per repo)
@@ -135,7 +126,7 @@ Local already blocked via `.husky/pre-push`.
 ```bash
 gh auth login -h github.com -p https -w
 gh repo create cvjungle --private --source=. --remote=origin
-# then feature branch + PR (never push main directly if ruleset applied)
+# then feature branch + push; user opens PR (never push main directly if ruleset applied)
 ```
 
 Repo secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, LLM keys, optional `RELEASE_PLEASE_TOKEN`  

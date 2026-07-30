@@ -1,5 +1,6 @@
 name: Conventional Commits
 
+# Runs on human/feature PRs only — not on Release Please release PRs.
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
@@ -13,7 +14,12 @@ jobs:
     name: PR title
     runs-on: ubuntu-latest
     steps:
+      - name: Skip Release Please PRs
+        if: startsWith(github.head_ref, 'release-please')
+        run: echo "Skipping PR title check for Release Please"
+
       - name: Validate PR title
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         uses: amannn/action-semantic-pull-request@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,24 +46,33 @@ jobs:
     name: Commit messages
     runs-on: ubuntu-latest
     steps:
+      - name: Skip Release Please PRs
+        if: startsWith(github.head_ref, 'release-please')
+        run: echo "Skipping commitlint for Release Please"
+
       - name: Checkout
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup pnpm
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Setup Node.js
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
 
       - name: Install dependencies
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         run: pnpm install --frozen-lockfile
 
       - name: Lint commits in PR
+        if: ${{ !startsWith(github.head_ref, 'release-please') }}
         run: pnpm exec commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose

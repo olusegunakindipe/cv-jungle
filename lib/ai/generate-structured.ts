@@ -82,7 +82,8 @@ ${previousText.slice(0, 4000)}
 Original task:
 ${taskPrompt}`,
       temperature: 0.2,
-      maxOutputTokens: 8192,
+      // Cap output so Groq TPD reservation stays modest (8k burned unused quota).
+      maxOutputTokens: 4096,
     });
 
     previousText = text;
