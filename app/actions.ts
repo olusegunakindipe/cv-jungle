@@ -2,11 +2,12 @@
 
 import { z } from "zod";
 import { generateStructured } from "@/lib/ai/generate-structured";
-import { isLlmErrorMissingKey } from "@/lib/ai";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import { sanitizeAiText, humanizeGeneratedText, polishGrammar } from "@/lib/text-style";
 import { getClientIp } from "@/lib/client-ip";
-import { assertLlmRateLimit, isRateLimitError } from "@/lib/rate-limit";
+import { assertLlmRateLimit } from "@/lib/rate-limit";
+import { assertFreeTrialFlow } from "@/lib/trial";
+import { type ActionResult, publicActionError, USER_ERRORS } from "@/lib/action-errors";
 import { StructuredCV, RoleDetails, AnalysisResult } from "@/types/cv";
 
 const cvSchema = z.object({
@@ -60,13 +61,13 @@ export async function runOptimizationAnalysisAction(input: {
   parsedText?: string;
   structuredCV?: StructuredCV | null;
   roleDetails: RoleDetails | null;
-}): Promise<OptimizationPipelineResult> {
+}): Promise<ActionResult<OptimizationPipelineResult>> {
   const { roleDetails } = input;
   if (!roleDetails?.title) {
-    throw new Error("Missing target role");
+    return { ok: false, error: USER_ERRORS.missingRole };
   }
   if (!input.structuredCV && (!input.parsedText || input.parsedText.length < 10)) {
-    throw new Error("Missing CV data");
+    return { ok: false, error: USER_ERRORS.missingCv };
   }
 
   const roleKey = roleFingerprint(roleDetails);
@@ -81,8 +82,9 @@ export async function runOptimizationAnalysisAction(input: {
     : `opt:raw:${textFingerprint(input.parsedText || "")}:${roleKey}`;
 
   try {
-    return await withRequestLock(lockKey, async () => {
+    const data = await withRequestLock(lockKey, async () => {
       const clientId = await getClientIp();
+      await assertFreeTrialFlow(clientId);
       assertLlmRateLimit(clientId, "analyze");
 
       const roleLine = `${roleDetails.title}${
@@ -237,14 +239,10 @@ ${String(input.parsedText).substring(0, 12000)}
         },
       };
     });
+    return { ok: true, data };
   } catch (error: unknown) {
     console.error("Optimization analysis error:", error);
-    if (isRateLimitError(error)) throw error;
-    throw new Error(
-      isLlmErrorMissingKey(error)
-        ? "REQUIRE_KEY"
-        : "Failed to analyze CV. Please try again."
-    );
+    return { ok: false, error: publicActionError(error) };
   }
 }
 
@@ -252,15 +250,24 @@ export async function rewriteCVSentencesAction(
   cvData: StructuredCV,
   roleDetails: RoleDetails | null,
   missingKeywords?: string[]
-) {
+): Promise<
+  ActionResult<{
+    improvements: Array<{
+      originalSentence: string;
+      rewrittenSentence: string;
+      reasoning: string;
+    }>;
+  }>
+> {
   if (!cvData || !roleDetails?.title) {
-    throw new Error("Missing CV data or target role");
+    return { ok: false, error: USER_ERRORS.missingData };
   }
 
   try {
     const lockKey = `rewrites:${textFingerprint(JSON.stringify(cvData))}:${roleFingerprint(roleDetails)}`;
-    return await withRequestLock(lockKey, async () => {
+    const data = await withRequestLock(lockKey, async () => {
       const clientId = await getClientIp();
+      await assertFreeTrialFlow(clientId);
       assertLlmRateLimit(clientId, "rewrites");
 
       return generateStructured({
@@ -302,20 +309,18 @@ Rules:
 6. reasoning = ATS/recruiter benefit of the rephrase, not "candidate lacks skill".
 7. Do not use em dashes, en dashes, or spaced hyphens as punctuation in rewrittenSentence.
 `,
-      }).then((data) => ({
-        improvements: (data.improvements || []).map((imp) => ({
+      }).then((result) => ({
+        improvements: (result.improvements || []).map((imp) => ({
           ...imp,
           rewrittenSentence: polishGrammar(sanitizeAiText(imp.rewrittenSentence || "")),
           reasoning: polishGrammar(sanitizeAiText(imp.reasoning || "")),
         })),
       }));
     });
+    return { ok: true, data };
   } catch (error: unknown) {
     console.error("Error generating rewrites:", error);
-    if (isRateLimitError(error)) throw error;
-    throw new Error(
-      isLlmErrorMissingKey(error) ? "REQUIRE_KEY" : "Failed to generate rewrites."
-    );
+    return { ok: false, error: publicActionError(error) };
   }
 }
 
@@ -328,7 +333,7 @@ export async function generateLinkedInAction(
   roleDetails: RoleDetails | null
 ) {
   if (!cvData || !roleDetails?.title) {
-    throw new Error("Missing CV data or target role");
+    throw new Error(USER_ERRORS.missingData);
   }
 
   const skills = (cvData.skills || [])

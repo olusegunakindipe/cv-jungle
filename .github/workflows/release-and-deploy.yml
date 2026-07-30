@@ -71,8 +71,10 @@ jobs:
         id: release
         uses: googleapis/release-please-action@v4
         with:
-          # Prefer RELEASE_PLEASE_TOKEN (PAT) when branch protection is on.
-          # Falls back to GITHUB_TOKEN when the secret is unset.
+          # Needs repo setting: Settings → Actions → General → Workflow permissions
+          #   - "Read and write permissions"
+          #   - ✅ "Allow GitHub Actions to create and approve pull requests"
+          # Or set secret RELEASE_PLEASE_TOKEN (classic PAT: repo scope).
           token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json

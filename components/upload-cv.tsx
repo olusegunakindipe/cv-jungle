@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCVContext } from "@/lib/cv-context";
+import { publicActionError } from "@/lib/action-errors";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -64,7 +65,10 @@ export function UploadCV() {
       // Structuring happens later in FinalReview (Phase 6) when the API key is available.
       setCurrentStep(2);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      const msg = err instanceof Error ? err.message : "";
+      setError(
+        msg && msg.length < 160 && !msg.includes("\n") ? msg : publicActionError(err)
+      );
     } finally {
       setLoading(false);
     }
@@ -80,8 +84,8 @@ export function UploadCV() {
         </div>
 
         <div className="relative z-10 space-y-10">
-          <div className="text-center space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest mb-2 border border-primary/20 dark:border-primary/25">
+          <div className="text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 dark:bg-primary/15 text-primary dark:text-primary rounded-lg text-[10px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/25">
               <Zap className="w-3 h-3" />
               Step 01: Data Extraction
             </div>

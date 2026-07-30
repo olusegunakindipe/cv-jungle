@@ -20,12 +20,12 @@ disable-model-invocation: false
 
 ## Workflows (what runs where)
 
-| Workflow                   | Trigger       | Does                                                            |
-| -------------------------- | ------------- | --------------------------------------------------------------- |
-| `ci.yml`                   | PR → `main`   | lint, format, typecheck, build                                  |
-| `conventional-commits.yml` | PR            | semantic PR title + commitlint on all commits                   |
-| `release-and-deploy.yml`   | push → `main` | quality → release-please → deploy **only if** `release_created` |
-| `dependabot.yml`           | weekly        | bump Actions + npm                                              |
+| Workflow                   | Trigger                              | Does                                                            |
+| -------------------------- | ------------------------------------ | --------------------------------------------------------------- |
+| `ci.yml`                   | PR → `main`                          | lint, format, typecheck, build                                  |
+| `conventional-commits.yml` | PR → `main` (skip `release-please*`) | semantic PR title + commitlint                                  |
+| `release-and-deploy.yml`   | push → `main`                        | quality → release-please → deploy **only if** `release_created` |
+| `dependabot.yml`           | weekly                               | bump Actions + npm                                              |
 
 Pipeline after merge to `main`:
 
