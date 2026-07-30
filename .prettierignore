@@ -9,3 +9,5 @@ package-lock.json
 *.min.js
 *.min.css
 public
+# Owned by release-please — its markdown often fails prettier --check
+CHANGELOG.md
