@@ -19,17 +19,17 @@ disable-model-invocation: false
 
 ## Workflows (what runs where)
 
-| Workflow | Trigger | Does |
-|----------|---------|------|
-| `ci.yml` | PR → `main` | lint, format, typecheck, build |
-| `conventional-commits.yml` | PR | semantic PR title + commitlint on all commits |
-| `release-and-deploy.yml` | push → `main` | quality → release-please → deploy **only if** `release_created` |
-| `dependabot.yml` | weekly | bump Actions + npm |
+| Workflow                   | Trigger       | Does                                                            |
+| -------------------------- | ------------- | --------------------------------------------------------------- |
+| `ci.yml`                   | PR → `main`   | lint, format, typecheck, build                                  |
+| `conventional-commits.yml` | PR            | semantic PR title + commitlint on all commits                   |
+| `release-and-deploy.yml`   | push → `main` | quality → release-please → deploy **only if** `release_created` |
+| `dependabot.yml`           | weekly        | bump Actions + npm                                              |
 
 Pipeline after merge to `main`:
 
-1. Quality gates  
-2. Release Please opens/updates `chore: release x.y.z` **or** cuts a GitHub Release  
+1. Quality gates
+2. Release Please opens/updates `chore: release x.y.z` **or** cuts a GitHub Release
 3. Production deploy runs **only** when a release was cut (merge the release PR)
 
 ## Agent checklist (every ship)
@@ -87,6 +87,7 @@ Version bumps (release-please): `feat` → minor (pre-1.0), `fix` → patch, `BR
 
 ```markdown
 ## Summary
+
 - <1–3 bullets summarizing the changes>
 ```
 

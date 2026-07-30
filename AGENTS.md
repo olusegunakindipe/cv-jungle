@@ -200,21 +200,21 @@ feature branch → PR → main
      Deploy production (only when a release is cut)
 ```
 
-1. Conventional commits on a feature branch  
-2. PR into `main` (CI + conventional commits must pass)  
-3. Merge PR → quality → **release-please**  
-4. Release Please opens/updates `chore: release x.y.z`  
-5. Merge that release PR → tag + GitHub Release → **then** production deploy  
+1. Conventional commits on a feature branch
+2. PR into `main` (CI + conventional commits must pass)
+3. Merge PR → quality → **release-please**
+4. Release Please opens/updates `chore: release x.y.z`
+5. Merge that release PR → tag + GitHub Release → **then** production deploy
 
 Disable Vercel “deploy on push to main” so only this workflow deploys production after a release.
 
 ### GitHub Actions
 
-| Workflow | When | What |
-|----------|------|------|
-| `.github/workflows/ci.yml` | PRs → `main` | lint, format, typecheck, build |
-| `.github/workflows/conventional-commits.yml` | PRs | Semantic PR title + commitlint |
-| `.github/workflows/release-and-deploy.yml` | push → `main` | quality → release-please → deploy if released |
+| Workflow                                     | When          | What                                          |
+| -------------------------------------------- | ------------- | --------------------------------------------- |
+| `.github/workflows/ci.yml`                   | PRs → `main`  | lint, format, typecheck, build                |
+| `.github/workflows/conventional-commits.yml` | PRs           | Semantic PR title + commitlint                |
+| `.github/workflows/release-and-deploy.yml`   | push → `main` | quality → release-please → deploy if released |
 
 ### Commit message format
 
@@ -264,7 +264,6 @@ If branch protection blocks release PRs with `GITHUB_TOKEN`, set `RELEASE_PLEASE
 - Match existing UI patterns (Tailwind, shadcn/ui components under `components/ui`)
 - Use Conventional Commit messages (`feat:`, `fix:`, `chore:`, …)
 - Never push directly to `main` — feature branch + PR only
-
 
 ---
 
