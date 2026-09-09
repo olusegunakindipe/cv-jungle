@@ -3,20 +3,51 @@
  * and collapse duplicated first-person openers.
  */
 
-/** Strip AI-looking dashes; keep real hyphenated words (e.g. "full-stack", "6+"). */
+/**
+ * Normalize punctuation to ASCII so Helvetica/jsPDF never switches to UTF-16
+ * (UTF-16 + standard fonts renders as letter-spaced "g a p s").
+ * Keeps real hyphenated words (e.g. "full-stack", "6+").
+ */
 export function sanitizeAiText(text: string): string {
-  return text
-    .replace(/\u2014/g, ", ") // —
-    .replace(/\u2013/g, ", ") // –
-    .replace(/\s*—\s*/g, ", ")
-    .replace(/\s*–\s*/g, ", ")
-    .replace(/\s+-\s+/g, ", ") // spaced hyphen used as a dash
-    .replace(/,{2,}/g, ",")
-    .replace(/\s+,/g, ",")
-    .replace(/,\s*\./g, ".")
-    .replace(/[ \t]{2,}/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return (
+    text
+      .normalize("NFKC")
+      // Zero-width / BOM / soft hyphen (invisible break → spacing bugs)
+      .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, "")
+      .replace(/\u00A0/g, " ") // nbsp
+      // Unicode hyphens → ASCII hyphen (U+2011 non-breaking hyphen is the common CV culprit)
+      .replace(/[\u2010\u2011\u2012\u2212]/g, "-")
+      // Em dash → comma (clause break)
+      .replace(/\u2014/g, ", ")
+      .replace(/\s*—\s*/g, ", ")
+      // En dash → " - " (date ranges, role subtitles)
+      .replace(/\u2013/g, " - ")
+      .replace(/\s*–\s*/g, " - ")
+      // Spaced ASCII hyphen used as a dash (not inside words)
+      .replace(/(\w)\s+-\s+(\w)/g, "$1 - $2")
+      .replace(/[\u2018\u2019\u2032]/g, "'")
+      .replace(/[\u201C\u201D\u2033]/g, '"')
+      .replace(/\u2026/g, "...")
+      .replace(/,{2,}/g, ",")
+      .replace(/\s+,/g, ",")
+      .replace(/,\s*\./g, ".")
+      .replace(/[ \t]{2,}/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
+}
+
+/**
+ * Force WinAnsi-safe text for jsPDF Helvetica. Call on every string drawn to PDF.
+ */
+export function toPdfSafeText(text: string): string {
+  return (
+    sanitizeAiText(text)
+      // Drop anything outside printable ASCII; accents already NFKC-folded where possible
+      .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, "")
+      .replace(/[ \t]{2,}/g, " ")
+      .trim()
+  );
 }
 
 /** Collapse duplicated openers like "I am a I am a results-driven…". */

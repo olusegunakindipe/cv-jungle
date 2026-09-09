@@ -223,7 +223,7 @@ export function KeywordAnalysis() {
                 </div>
               </div>
               <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-                Before we optimize — next steps raise this
+                Before we optimize: next steps raise this
               </p>
             </Card>
 
@@ -290,7 +290,7 @@ export function KeywordAnalysis() {
                     Phrasing to strengthen
                   </h4>
                   <p className="text-xs text-white/70 uppercase font-black tracking-widest">
-                    Emphasize from your existing experience — no new skills added
+                    Emphasize from your existing experience (no new skills added)
                   </p>
                 </div>
                 <Sparkles className="w-6 h-6 shrink-0 text-leaf" />
@@ -307,7 +307,7 @@ export function KeywordAnalysis() {
                   ))
                 ) : (
                   <p className="text-sm text-white/80 italic font-medium">
-                    Strong keyword coverage — we&apos;ll polish phrasing next.
+                    Strong keyword coverage; we&apos;ll polish phrasing next.
                   </p>
                 )}
               </div>

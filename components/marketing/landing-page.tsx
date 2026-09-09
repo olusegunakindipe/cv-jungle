@@ -72,7 +72,7 @@ export function MarketingLanding() {
             </p>
             <div className="h-1 w-24 origin-left scale-x-0 bg-primary animate-rule" />
             <h1 className="animate-rise-delay max-w-xl font-display text-3xl leading-tight tracking-tight text-foreground sm:text-4xl md:text-[2.75rem]">
-              Cut through the job-search jungle — real skills, role fit, ATS-readable
+              Cut through the job-search jungle: real skills, role fit, ATS-readable
               results.
             </h1>
             <p className="animate-rise-delay-2 max-w-lg text-lg leading-relaxed text-muted-foreground">
@@ -85,7 +85,7 @@ export function MarketingLanding() {
                 href="/optimize"
                 className="rounded-lg bg-foreground px-6 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
               >
-                Get started — free
+                Get started (free)
               </Link>
               <a
                 href="#linkedin"
@@ -282,8 +282,8 @@ export function MarketingLanding() {
           <p className="leading-relaxed text-muted-foreground">
             Use it to optimize a resume for a senior role, pivot into a new industry like
             healthcare or insurance, or refresh LinkedIn headline and About copy so both
-            channels match. Search terms people use — CV optimization, ATS resume checker,
-            LinkedIn headline generator — describe features; the product promise is
+            channels match. Search terms people use (CV optimization, ATS resume checker,
+            LinkedIn headline generator) describe features; the product promise is
             integrity.
           </p>
         </div>

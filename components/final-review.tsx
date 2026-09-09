@@ -288,7 +288,7 @@ export function FinalReview() {
             value:
               scores.keywordsTotal > 0
                 ? `${scores.keywordsRecovered}/${scores.keywordsTotal}`
-                : "—",
+                : "-",
           },
           {
             label: "Bullets rewritten",
@@ -324,7 +324,7 @@ export function FinalReview() {
             <div className="flex items-center gap-2 text-muted-foreground">
               <FileText className="w-4 h-4" />
               <span className="text-[10px] font-black uppercase tracking-widest">
-                Preview — ATS-ready layout
+                Preview: ATS-ready layout
               </span>
             </div>
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
@@ -352,7 +352,7 @@ export function FinalReview() {
                 <h2 className="text-[11px] font-bold uppercase tracking-widest border-b border-black pb-1 mb-2 text-black">
                   Professional Summary
                 </h2>
-                <p className="text-[12px] text-neutral-800 leading-relaxed text-justify">
+                <p className="text-[12px] text-neutral-800 leading-relaxed text-left">
                   {optimizedCV.summary}
                 </p>
               </section>
@@ -380,7 +380,7 @@ export function FinalReview() {
                       <div className="flex justify-between gap-4 items-baseline">
                         <p className="text-[13px] font-bold text-black">
                           {exp.role}
-                          {exp.company ? `  —  ${exp.company}` : ""}
+                          {exp.company ? `, ${exp.company}` : ""}
                         </p>
                         <p className="text-[11px] text-neutral-600 whitespace-nowrap">
                           {exp.duration}

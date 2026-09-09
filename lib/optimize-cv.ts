@@ -130,6 +130,9 @@ function prepareExperience(
 ): Experience[] {
   return experience.slice(0, maxRoles).map((exp) => ({
     ...exp,
+    company: sanitizeAiText(exp.company || ""),
+    role: sanitizeAiText(exp.role || ""),
+    duration: sanitizeAiText(exp.duration || ""),
     description: (exp.description || [])
       .map((b) => polishGrammar(sanitizeAiText(b.replace(/^[\s\-•▸●○▪►]+/, "").trim())))
       .filter((b) => b.length > 12)
@@ -149,14 +152,19 @@ export function buildOptimizedCV(
 
   return {
     ...cv,
-    name: cv.name?.trim() || "Professional",
-    email: cv.email?.trim() || "",
-    phone: cv.phone?.trim() || "",
-    location: cv.location?.trim() || "",
+    name: sanitizeAiText(cv.name?.trim() || "Professional"),
+    email: sanitizeAiText(cv.email?.trim() || ""),
+    phone: sanitizeAiText(cv.phone?.trim() || ""),
+    location: sanitizeAiText(cv.location?.trim() || ""),
     summary: buildSummary(cv, analysis, linkedIn, roleTitle),
     experience: prepareExperience(rewritten, 5, 8),
-    skills: keepOriginalSkills(cv.skills || [], 24),
-    education: (cv.education || []).slice(0, 3),
-    targetRole: roleTitle,
+    skills: keepOriginalSkills(cv.skills || [], 24).map((s) => sanitizeAiText(s)),
+    education: (cv.education || []).slice(0, 3).map((edu) => ({
+      ...edu,
+      institution: sanitizeAiText(edu.institution || ""),
+      degree: sanitizeAiText(edu.degree || ""),
+      year: sanitizeAiText(edu.year || ""),
+    })),
+    targetRole: roleTitle ? sanitizeAiText(roleTitle) : undefined,
   };
 }

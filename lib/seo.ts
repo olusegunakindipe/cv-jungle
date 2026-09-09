@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 const siteName = "CVJungle";
-const defaultTitle = "CVJungle | Optimize Your CV & LinkedIn — Truthful ATS Rewrites";
+const defaultTitle = "CVJungle | Optimize Your CV & LinkedIn: Truthful ATS Rewrites";
 const defaultDescription =
   "CVJungle helps you cut through the job-search jungle: refine your CV and LinkedIn for a target role, rewrite bullets without inventing skills, and export an ATS-friendly PDF.";
 
@@ -85,7 +85,7 @@ export function buildMetadata(): Metadata {
           url: "/opengraph-image",
           width: 1200,
           height: 630,
-          alt: "CVJungle — truthful CV and LinkedIn optimization for ATS",
+          alt: "CVJungle: truthful CV and LinkedIn optimization for ATS",
         },
       ],
     },

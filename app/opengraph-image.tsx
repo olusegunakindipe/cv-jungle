@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "CVJungle — truthful CV and LinkedIn optimization for ATS";
+export const alt = "CVJungle: truthful CV and LinkedIn optimization for ATS";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
