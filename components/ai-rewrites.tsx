@@ -18,7 +18,7 @@ import {
   Cpu,
 } from "lucide-react";
 import { rewriteCVSentencesAction } from "@/app/actions";
-import { publicActionError, USER_ERRORS } from "@/lib/action-errors";
+import { publicActionError, USER_ERRORS } from "@/lib/user-errors";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import toast from "react-hot-toast";
 
