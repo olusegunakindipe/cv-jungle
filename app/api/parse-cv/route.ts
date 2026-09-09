@@ -7,7 +7,7 @@ import { USER_ERRORS } from "@/lib/action-errors";
 
 export async function POST(req: Request) {
   try {
-    assertParseRateLimit(getClientIpFromRequest(req));
+    await assertParseRateLimit(getClientIpFromRequest(req));
 
     const formData = await req.formData();
     const file = formData.get("file") as File;
