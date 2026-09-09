@@ -50,12 +50,12 @@ Copy `.env.example` → `.env.local`.
 
 Pick **one** provider via `LLM_PROVIDER`:
 
-| Provider | Env                            | Free?         | Notes                                                                                                                                                               |
-| -------- | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `groq`   | `GROQ_API_KEY`                 | Yes (testing) | Default free option. Model: `llama-3.3-70b-versatile`. Structured JSON uses `lib/ai/generate-structured.ts` (text + parse), so json_schema support is not required. |
-| `google` | `GOOGLE_GENERATIVE_AI_API_KEY` | Free tier     | Model: `gemini-2.0-flash`                                                                                                                                           |
-| `ollama` | (local)                        | Fully free    | Run `ollama serve`; optional `OLLAMA_BASE_URL`                                                                                                                      |
-| `openai` | `OPENAI_API_KEY`               | Paid          | Model: `gpt-4o-mini`                                                                                                                                                |
+| Provider | Env                            | Free?         | Notes                                                                                                                                                                                                           |
+| -------- | ------------------------------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `groq`   | `GROQ_API_KEY`                 | Yes (testing) | Default free option. Model: `openai/gpt-oss-120b` (replaces deprecated `llama-3.3-70b-versatile`). Structured JSON uses `lib/ai/generate-structured.ts` (text + parse), so json_schema support is not required. |
+| `google` | `GOOGLE_GENERATIVE_AI_API_KEY` | Free tier     | Model: `gemini-2.0-flash`                                                                                                                                                                                       |
+| `ollama` | (local)                        | Fully free    | Run `ollama serve`; optional `OLLAMA_BASE_URL`                                                                                                                                                                  |
+| `openai` | `OPENAI_API_KEY`               | Paid          | Model: `gpt-4o-mini`                                                                                                                                                                                            |
 
 Optional override: `LLM_MODEL=<model-id>`.
 
