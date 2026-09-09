@@ -67,6 +67,15 @@ Optional override: `LLM_MODEL=<model-id>`.
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Search Console HTML tag verification                            |
 | `NEXT_PUBLIC_ENABLE_DEMO`              | `true` to show demo CV button (off by default)                  |
 
+### Durable trial / rate limits (optional)
+
+| Var                        | Purpose                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL — shared store for free-trial + rate limits across Vercel instances |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                                                                   |
+
+If either var is unset, the app falls back to in-memory Maps (fine for local/CI). No local Redis server is required. Create a free DB at [console.upstash.com](https://console.upstash.com) for production.
+
 ---
 
 ## LLM provider interface (switch without changing logic)
