@@ -102,6 +102,15 @@ export function publicActionError(error: unknown): string {
     return USER_ERRORS.unavailable;
   }
 
+  // Deprecated / unknown model IDs (e.g. Groq model_not_found) should not look like a random crash.
+  if (
+    lower.includes("model_not_found") ||
+    lower.includes("does not exist") ||
+    lower.includes("do not have access to it")
+  ) {
+    return USER_ERRORS.unavailable;
+  }
+
   if (isProviderQuota(fullText)) {
     return USER_ERRORS.busy;
   }
