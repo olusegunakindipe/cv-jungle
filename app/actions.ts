@@ -100,7 +100,8 @@ export async function runOptimizationAnalysisAction(input: {
 
         const analysis = await generateStructured({
           schema: analysisSchema,
-          maxAttempts: 1,
+          maxAttempts: 2,
+          maxOutputTokens: 6144,
           schemaHint: `{
   "score": 58,
   "foundKeywords": ["stakeholder management", "budget planning"],
@@ -123,9 +124,10 @@ CRITICAL RULES:
 - optimizedSummary MUST be FIRST PERSON (I / my / I've), as if the candidate wrote their own CV. Never use he/she/they or the candidate's full name.
 - Do NOT use em dashes, en dashes, or spaced hyphens as punctuation. Use commas or periods instead.
 - optimizedSummary MUST be complete: 3–4 full sentences, end with a period, never cut off mid-sentence or mid-clause.
+- Keep JSON compact (no pretty-printing, short keyword strings) so the response is not truncated.
 
 Structured CV:
-${JSON.stringify(cvForAnalysis, null, 2)}
+${JSON.stringify(cvForAnalysis)}
 
 Return:
 1. score (0-100): current ATS match BEFORE optimization (honest; typical 45-75).
@@ -170,7 +172,8 @@ Return:
           cv: cvSchema,
           analysis: analysisSchema,
         }),
-        maxAttempts: 1,
+        maxAttempts: 2,
+        maxOutputTokens: 8192,
         schemaHint: `{
   "cv": {
     "name": "string",
@@ -199,6 +202,7 @@ CRITICAL: Never invent skills/tools/credentials not in the CV. Never invent a ne
 NEVER say the candidate has "limited" experience in the target industry — frame transferable value instead.
 optimizedSummary must be FIRST PERSON (I / my), 3–4 COMPLETE sentences ending with a period (never truncated). Never use the person's name or he/she.
 Do not use em dashes or en dashes; use commas or periods.
+Keep the JSON compact (minified, short strings) so it is not truncated.
 
 From the raw CV text:
 1) Extract structured CV fields (do not invent employers/dates/achievements/skills). Keep ALL meaningful experience bullets — do not drop significant achievements.
