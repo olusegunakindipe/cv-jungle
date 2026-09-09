@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.3...v0.1.4) (2026-09-09)
+
+
+### Bug Fixes
+
+* harden LLM JSON parsing and retry analysis once ([#20](https://github.com/olusegunakindipe/cv-jungle/issues/20)) ([00c2200](https://github.com/olusegunakindipe/cv-jungle/commit/00c220085063f842d851516976a1e9343ba76560))
+* stop PDF letter-spacing and remove em dashes ([#21](https://github.com/olusegunakindipe/cv-jungle/issues/21)) ([9513462](https://github.com/olusegunakindipe/cv-jungle/commit/9513462735f4e74e5a4833228734b32b6a4fbe22))
+
 ## [0.1.3](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.2...v0.1.3) (2026-09-09)
 
 
