@@ -85,7 +85,7 @@ export async function runOptimizationAnalysisAction(input: {
     const data = await withRequestLock(lockKey, async () => {
       const clientId = await getClientIp();
       await assertFreeTrialFlow(clientId);
-      assertLlmRateLimit(clientId, "analyze");
+      await assertLlmRateLimit(clientId, "analyze");
 
       const roleLine = `${roleDetails.title}${
         roleDetails.seniority ? `, ${roleDetails.seniority}` : ""
@@ -268,7 +268,7 @@ export async function rewriteCVSentencesAction(
     const data = await withRequestLock(lockKey, async () => {
       const clientId = await getClientIp();
       await assertFreeTrialFlow(clientId);
-      assertLlmRateLimit(clientId, "rewrites");
+      await assertLlmRateLimit(clientId, "rewrites");
 
       return generateStructured({
         schema: z.object({

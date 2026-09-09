@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { USER_ERRORS } from "@/lib/user-errors";
 
 function ScoreRing({
   score,
@@ -180,7 +181,7 @@ export function FinalReview() {
   const handleDownloadPDF = async () => {
     if (!optimizedCV) {
       if (structuringFailed) {
-        toast.error("AI structuring failed. Please retry or check your API key.", {
+        toast.error(USER_ERRORS.unavailable, {
           id: "struct-fail",
         });
       } else {
@@ -199,8 +200,7 @@ export function FinalReview() {
       toast.success("Optimized CV downloaded!", { id: "pdf-toast" });
     } catch (error: unknown) {
       console.error("PDF generation failed:", error);
-      const errorMessage = error instanceof Error ? error.message : "Unknown error";
-      toast.error(`PDF failed: ${errorMessage}`, {
+      toast.error(USER_ERRORS.generic, {
         id: "pdf-toast",
         duration: 5000,
       });

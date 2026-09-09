@@ -2,7 +2,6 @@
 
 ## [0.1.2](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.1...v0.1.2) (2026-07-30)
 
-
 ### Features
 
 * add free-trial gate and generic AI error messages ([#14](https://github.com/olusegunakindipe/cv-jungle/issues/14)) ([bc61e6f](https://github.com/olusegunakindipe/cv-jungle/commit/bc61e6f53e05f96312e5c8d91936cb80a897cf87))
@@ -11,12 +10,10 @@
 
 ## [0.1.1](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.0...v0.1.1) (2026-07-30)
 
-
 ### Features
 
 * add free-trial gate and generic AI error messages ([b1b2f60](https://github.com/olusegunakindipe/cv-jungle/commit/b1b2f6026ef89581c9f4f766e8d407eee7f1cc43))
 * initial commit ([5400641](https://github.com/olusegunakindipe/cv-jungle/commit/54006415400dea63af0dd1e360a656b04ffbfd85))
-
 
 ### Documentation
 

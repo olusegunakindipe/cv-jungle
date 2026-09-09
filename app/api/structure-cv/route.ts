@@ -78,8 +78,8 @@ export async function POST(req: Request) {
     } | null = null;
 
     const object = await withRequestLock(lockKey, async () => {
-      trialMeta = assertFreeTrialFlowFromRequest(req, clientId);
-      assertLlmRateLimit(clientId, "structure");
+      trialMeta = await assertFreeTrialFlowFromRequest(req, clientId);
+      await assertLlmRateLimit(clientId, "structure");
       return generateStructured({
         schema: structuredCvSchema,
         schemaHint: SCHEMA_HINT,

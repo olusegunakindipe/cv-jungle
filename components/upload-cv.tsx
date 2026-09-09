@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCVContext } from "@/lib/cv-context";
-import { publicActionError } from "@/lib/action-errors";
+import { publicActionError } from "@/lib/user-errors";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {

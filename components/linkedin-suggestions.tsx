@@ -22,7 +22,7 @@ import {
   Briefcase,
 } from "lucide-react";
 import { generateLinkedInAction } from "@/app/actions";
-import { publicActionError } from "@/lib/action-errors";
+import { publicActionError } from "@/lib/user-errors";
 import { textFingerprint, withRequestLock, roleFingerprint } from "@/lib/request-lock";
 import { buildOptimizedCV } from "@/lib/optimize-cv";
 import toast from "react-hot-toast";

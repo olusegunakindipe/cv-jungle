@@ -50,12 +50,12 @@ Copy `.env.example` → `.env.local`.
 
 Pick **one** provider via `LLM_PROVIDER`:
 
-| Provider | Env                            | Free?         | Notes                                                                                                                                                               |
-| -------- | ------------------------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `groq`   | `GROQ_API_KEY`                 | Yes (testing) | Default free option. Model: `llama-3.3-70b-versatile`. Structured JSON uses `lib/ai/generate-structured.ts` (text + parse), so json_schema support is not required. |
-| `google` | `GOOGLE_GENERATIVE_AI_API_KEY` | Free tier     | Model: `gemini-2.0-flash`                                                                                                                                           |
-| `ollama` | (local)                        | Fully free    | Run `ollama serve`; optional `OLLAMA_BASE_URL`                                                                                                                      |
-| `openai` | `OPENAI_API_KEY`               | Paid          | Model: `gpt-4o-mini`                                                                                                                                                |
+| Provider | Env                            | Free?         | Notes                                                                                                                                                                                                           |
+| -------- | ------------------------------ | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `groq`   | `GROQ_API_KEY`                 | Yes (testing) | Default free option. Model: `openai/gpt-oss-120b` (replaces deprecated `llama-3.3-70b-versatile`). Structured JSON uses `lib/ai/generate-structured.ts` (text + parse), so json_schema support is not required. |
+| `google` | `GOOGLE_GENERATIVE_AI_API_KEY` | Free tier     | Model: `gemini-2.0-flash`                                                                                                                                                                                       |
+| `ollama` | (local)                        | Fully free    | Run `ollama serve`; optional `OLLAMA_BASE_URL`                                                                                                                                                                  |
+| `openai` | `OPENAI_API_KEY`               | Paid          | Model: `gpt-4o-mini`                                                                                                                                                                                            |
 
 Optional override: `LLM_MODEL=<model-id>`.
 
@@ -66,6 +66,15 @@ Optional override: `LLM_MODEL=<model-id>`.
 | `NEXT_PUBLIC_SITE_URL`                 | Canonical URL for sitemap, OG, robots (use real domain in prod) |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Search Console HTML tag verification                            |
 | `NEXT_PUBLIC_ENABLE_DEMO`              | `true` to show demo CV button (off by default)                  |
+
+### Durable trial / rate limits (optional)
+
+| Var                        | Purpose                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| `UPSTASH_REDIS_REST_URL`   | Upstash Redis REST URL — shared store for free-trial + rate limits across Vercel instances |
+| `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST token                                                                   |
+
+If either var is unset, the app falls back to in-memory Maps (fine for local/CI). No local Redis server is required. Create a free DB at [console.upstash.com](https://console.upstash.com) for production.
 
 ---
 
