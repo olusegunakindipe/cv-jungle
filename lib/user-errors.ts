@@ -111,6 +111,15 @@ export function publicActionError(error: unknown): string {
     return USER_ERRORS.unavailable;
   }
 
+  if (
+    lower.includes("invalid or truncated json") ||
+    lower.includes("expected ',' or '}'") ||
+    lower.includes("unexpected token") ||
+    lower.includes("failed to generate valid structured json")
+  ) {
+    return USER_ERRORS.generic;
+  }
+
   if (isProviderQuota(fullText)) {
     return USER_ERRORS.busy;
   }
