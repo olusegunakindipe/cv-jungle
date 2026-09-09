@@ -148,7 +148,7 @@ export function LinkedInSuggestions() {
           <span className="text-primary dark:text-primary not-italic">Improvement</span>
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto font-medium text-base">
-          Optional step — copy headline, About, skills, and experience from your improved
+          Optional step: copy headline, About, skills, and experience from your improved
           CV into LinkedIn.
         </p>
       </div>
@@ -256,7 +256,7 @@ export function LinkedInSuggestions() {
                     ))
                 ) : (
                   <p className="text-sm text-muted-foreground italic">
-                    About content unavailable — try generating again.
+                    About content unavailable. Try generating again.
                   </p>
                 )}
               </div>

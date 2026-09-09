@@ -1,5 +1,6 @@
 import { jsPDF } from "jspdf";
 import { OptimizedCV, trimAtSentence } from "@/lib/optimize-cv";
+import { toPdfSafeText } from "@/lib/text-style";
 
 const PAGE_WIDTH = 595.28;
 const PAGE_HEIGHT = 841.89;
@@ -56,7 +57,11 @@ function setColor(doc: jsPDF, rgb: [number, number, number]) {
 }
 
 function wrapText(doc: jsPDF, text: string, maxWidth: number): string[] {
-  return doc.splitTextToSize(text || "", maxWidth) as string[];
+  return doc.splitTextToSize(toPdfSafeText(text || ""), maxWidth) as string[];
+}
+
+function safe(text: string): string {
+  return toPdfSafeText(text || "");
 }
 
 function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
@@ -87,14 +92,16 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
   };
 
   // Header
-  const name = (cv.name || "Professional").toUpperCase();
+  const name = safe(cv.name || "Professional").toUpperCase();
   doc.setFont("helvetica", "bold");
   doc.setFontSize(density.nameSize);
   setColor(doc, COLOR.black);
   doc.text(name, PAGE_WIDTH / 2, y, { align: "center" });
   y += density.lineH + 2;
 
-  const contactParts = [cv.location, cv.phone, cv.email].filter(Boolean);
+  const contactParts = [cv.location, cv.phone, cv.email]
+    .map((p) => safe(p || ""))
+    .filter(Boolean);
   if (contactParts.length) {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(density.bodySize - 0.5);
@@ -109,7 +116,7 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(density.bodySize);
     setColor(doc, COLOR.dark);
-    doc.text(cv.targetRole, PAGE_WIDTH / 2, y, { align: "center" });
+    doc.text(safe(cv.targetRole), PAGE_WIDTH / 2, y, { align: "center" });
     y += density.lineH - 1;
   }
 
@@ -137,7 +144,14 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(density.bodySize);
     setColor(doc, COLOR.dark);
-    const lines = wrapText(doc, cv.skills.join("  •  "), contentWidth);
+    const lines = wrapText(
+      doc,
+      (cv.skills || [])
+        .map((s) => safe(s))
+        .filter(Boolean)
+        .join("  •  "),
+      contentWidth
+    );
     lines.forEach((line) => {
       ensureSpace(density.lineH);
       doc.text(line, density.marginX, y);
@@ -155,8 +169,10 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
       doc.setFontSize(density.bodySize + 0.5);
       setColor(doc, COLOR.black);
 
-      const roleLine = [exp.role, exp.company].filter(Boolean).join("  —  ");
-      const duration = exp.duration || "";
+      const roleLine = [safe(exp.role || ""), safe(exp.company || "")]
+        .filter(Boolean)
+        .join(", ");
+      const duration = safe(exp.duration || "");
       const durationWidth = duration ? doc.getTextWidth(duration) : 0;
       const roleLines = wrapText(doc, roleLine, contentWidth - durationWidth - 10);
 
@@ -183,7 +199,7 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
       }
 
       for (const bullet of exp.description || []) {
-        const clean = bullet.replace(/^[\s\-•▸●○▪►]+/, "").trim();
+        const clean = safe(bullet.replace(/^[\s\-•▸●○▪►]+/, "").trim());
         if (!clean) continue;
         doc.setFont("helvetica", "normal");
         doc.setFontSize(density.bulletSize);
@@ -210,12 +226,12 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(density.bodySize);
       setColor(doc, COLOR.black);
-      doc.text(edu.degree || "", density.marginX, y);
+      doc.text(safe(edu.degree || ""), density.marginX, y);
       if (edu.year) {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(density.bodySize - 0.5);
         setColor(doc, COLOR.muted);
-        doc.text(edu.year, PAGE_WIDTH - density.marginX, y, {
+        doc.text(safe(edu.year), PAGE_WIDTH - density.marginX, y, {
           align: "right",
         });
       }
@@ -224,7 +240,7 @@ function renderCv(doc: jsPDF, cv: OptimizedCV, density: Density): number {
         doc.setFont("helvetica", "normal");
         doc.setFontSize(density.bodySize);
         setColor(doc, COLOR.dark);
-        doc.text(edu.institution, density.marginX, y);
+        doc.text(safe(edu.institution), density.marginX, y);
         y += density.lineH;
       }
       y += 2;

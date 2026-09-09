@@ -83,7 +83,7 @@ export function CvOptimizerApp() {
             </h1>
             <p className="text-muted-foreground leading-relaxed">
               We will align wording to your target role and generate matching LinkedIn
-              copy — without inventing skills.
+              copy, without inventing skills.
             </p>
           </div>
         )}

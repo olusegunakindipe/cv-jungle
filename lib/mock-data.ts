@@ -98,7 +98,7 @@ export const MOCK_LINKEDIN_RESULT: LinkedInResult = {
   headline:
     "Senior Full Stack Engineer | Next.js & AWS Specialist | Building Scalable Enterprise Systems",
   about:
-    "I'm a Senior Full Stack Engineer passionate about bridging the gap between high-level architecture and pixel-perfect implementation. At TechFlow Systems, I led the transition to a modern Next.js stack, delivering a 40% performance improvement and 25% cost reduction.\n\nI thrive in environments that challenge me to solve complex scalability problems while mentoring the next generation of engineers. My approach combines rigorous engineering principles with a product mindset — I don't just build features, I solve real business problems.\n\nCurrently open to senior engineering roles where I can drive meaningful impact from day one. Let's connect!",
+    "I'm a Senior Full Stack Engineer passionate about bridging the gap between high-level architecture and pixel-perfect implementation. At TechFlow Systems, I led the transition to a modern Next.js stack, delivering a 40% performance improvement and 25% cost reduction.\n\nI thrive in environments that challenge me to solve complex scalability problems while mentoring the next generation of engineers. My approach combines rigorous engineering principles with a product mindset: I don't just build features, I solve real business problems.\n\nCurrently open to senior engineering roles where I can drive meaningful impact from day one. Let's connect!",
   skills: [
     "TypeScript",
     "React",
@@ -136,7 +136,7 @@ export const MOCK_LINKEDIN_RESULT: LinkedInResult = {
   connectionMessage:
     "Hi [Name], I came across your profile and was impressed by your work at [Company]. As a Senior Full Stack Engineer myself, I'd love to connect and share insights about scalable engineering and tech leadership. Looking forward to building a meaningful connection!",
   profileStrengthTips: [
-    "Add a professional headshot — profiles with photos get 14x more views from recruiters",
+    "Add a professional headshot: profiles with photos get 14x more views from recruiters",
     "Request 3+ recommendations from former managers or senior colleagues to boost credibility",
     "Enable 'Open to Work' (visible only to recruiters) for passive inbound opportunities",
     "Post one technical insight or article per week to stay visible in your network feed",
