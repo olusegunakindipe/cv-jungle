@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.103",
-    "@ai-sdk/groq": "^3.0.54",
+    "@ai-sdk/groq": "^4.0.13",
     "@ai-sdk/openai": "^3.0.41",
     "@upstash/redis": "^1.38.4",
     "ai": "^6.0.116",
