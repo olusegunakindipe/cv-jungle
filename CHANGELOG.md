@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.2...v0.1.3) (2026-09-09)
+
+
+### Features
+
+* production hardening limits ([#18](https://github.com/olusegunakindipe/cv-jungle/issues/18)) ([844201f](https://github.com/olusegunakindipe/cv-jungle/commit/844201f49f262b7f22c5e7686289ccc952316711))
+
 ## [0.1.2](https://github.com/olusegunakindipe/cv-jungle/compare/v0.1.1...v0.1.2) (2026-07-30)
 
 ### Features
